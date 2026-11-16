@@ -3,7 +3,7 @@
 // BACKEND API CONFIGURATION
 // =====================================
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://blogspace-blog-backend-8ioz.vercel.app/api";
 
 const DEFAULT_IMG =
   "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=60";
@@ -45,7 +45,13 @@ async function apiRequest(endpoint, options = {}) {
     headers
   });
 
-  const data = await response.json();
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("Invalid server response. Please try again.");
+  }
 
   if (!response.ok) {
     throw new Error(data.message || "Something went wrong");
@@ -346,7 +352,7 @@ async function loadDashboard() {
     const all = await fetchBlogs();
 
     const mine = all.filter((b) =>
-      b.author && b.author._id === user.id
+      b.author && b.author._id === (user.id || user._id)
     );
 
     document.getElementById("statMine").textContent = mine.length;
